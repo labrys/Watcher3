@@ -69,7 +69,7 @@ def search_all():
     if not movies:
         return
 
-    backlog_movies = [i for i in movies if i['backlog'] != 1 and i['status'] is not 'Disabled' and Manage.verify(i, today=today)]
+    backlog_movies = [i for i in movies if i['backlog'] != 1 and i['status'] != 'Disabled' and Manage.verify(i, today=today)]
     if backlog_movies:
         logging.debug('Backlog movies: {}'.format(', '.join(i['title'] for i in backlog_movies)))
         for movie in backlog_movies:

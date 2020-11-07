@@ -61,9 +61,9 @@ class TheMovieDatabase(object):
 
         if re.match('^tt[0-9]{7,9}$', search_term):
             movies = TheMovieDatabase._search_imdbid(search_term)
-        elif re.match('^imdb:\s*tt[0-9]{7,8}\s*$', search_term):
+        elif re.match(r'^imdb:\s*tt[0-9]{7,8}\s*$', search_term):
             movies = TheMovieDatabase._search_imdbid(search_term[5:].strip())
-        elif re.match('^tmdb:\s*[0-9]+\s*$', search_term):
+        elif re.match(r'^tmdb:\s*[0-9]+\s*$', search_term):
             movies = TheMovieDatabase._search_tmdbid(search_term[5:].strip())
             if movies and 'status' in movies[0]:
                 # watcher thinks movie is already added when it has status, so we don't want status in search result
