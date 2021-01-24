@@ -385,7 +385,10 @@ class FinishedTorrentsCheck(object):
                     if torrent['status'] == 'finished' and config.get('removetorrents'):
                         logging.info('Check if we know finished torrent {} and is postprocessed ({})'.format(torrent['hash'], torrent['name']))
                         if core.sql.row_exists('MARKEDRESULTS', guid=str(torrent['hash']), status='Finished'):
+                            logging.info('Yes, now we remove the torrent')
                             downloader.cancel_download(torrent['hash'])
+                        else:
+                            logging.info('No, did not find the torrent as finished')
 
                     if torrent['status'] == 'stalled':
                         logging.info('Check if we know torrent {} and is snatched ({})'.format(torrent['hash'], torrent['name']))
