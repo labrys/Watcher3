@@ -3,8 +3,8 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib'))
 
-if sys.version_info < (3, 0, 0):
-    print('Python 3.0 or newer required. Currently {}.'.format(sys.version.split(' ')[0]))
+if sys.version_info < (3, 8, 0):
+    print('Python 3.8 or newer required. Currently {}.'.format(sys.version.split(' ')[0]))
     sys.exit(1)
 
 import watcher3         # noqa
@@ -144,7 +144,7 @@ if __name__ == '__main__':
         if watcher3.PLATFORM == '*nix':
             Daemonizer(cherrypy.engine).subscribe()
         elif watcher3.PLATFORM == 'windows':
-            from cherrypysytray import SysTrayPlugin  # noqa
+            from watcher3.cherrypysytray import SysTrayPlugin  # noqa
             menu_options = (('Open Browser', None, lambda *args: webbrowser.open(watcher3.SERVER_URL)),)
             systrayplugin = SysTrayPlugin(cherrypy.engine, 'core/favicon.ico', 'Watcher', menu_options)
             systrayplugin.subscribe()

@@ -15,7 +15,6 @@ transmission-rpc
 hachoir
 xmljson
 stringscore
-m2r
 cherrypyscheduler@git+https://github.com/sawyersteven/CherrypyScheduler@master
 mako
 infi.systray
