@@ -1,7 +1,8 @@
 # To update libraries run:
 #    pip install m2r   # required before installing CherrypyScheduler
 #    pip install --upgrade -t lib -r requirements.txt  # installs packages to lib folder
-# https://github.com/sawyersteven/CherrypySystray@master
+# Manually copy to lib folder:
+#    https://github.com/sawyersteven/CherrypySystray@master
 
 cherrypy
 sqlalchemy
