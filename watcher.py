@@ -7,14 +7,14 @@ if sys.version_info < (3, 0, 0):
     print('Python 3.0 or newer required. Currently {}.'.format(sys.version.split(' ')[0]))
     sys.exit(1)
 
-import core         # noqa
-core.PROG_PATH = os.path.dirname(os.path.realpath(__file__))
-os.chdir(core.PROG_PATH)
-core.SCRIPT_PATH = os.path.join(core.PROG_PATH, os.path.basename(__file__))
+import watcher3         # noqa
+watcher3.PROG_PATH = os.path.dirname(os.path.realpath(__file__))
+os.chdir(watcher3.PROG_PATH)
+watcher3.SCRIPT_PATH = os.path.join(watcher3.PROG_PATH, os.path.basename(__file__))
 if os.name == 'nt':
-    core.PLATFORM = 'windows'
+    watcher3.PLATFORM = 'windows'
 else:
-    core.PLATFORM = '*nix'
+    watcher3.PLATFORM = '*nix'
 
 import argparse     # noqa
 import locale       # noqa
@@ -55,44 +55,44 @@ if __name__ == '__main__':
     passed_args = parser.parse_args()
 
     if passed_args.userdata:
-        core.USERDATA = passed_args.userdata
-        core.CONF_FILE = os.path.join(passed_args.userdata, 'config.cfg')
-        core.DB_FILE = os.path.join(passed_args.userdata, 'watcher.sqlite')
-        if not os.path.exists(core.USERDATA):
-            os.mkdir(core.USERDATA)
+        watcher3.USERDATA = passed_args.userdata
+        watcher3.CONF_FILE = os.path.join(passed_args.userdata, 'config.cfg')
+        watcher3.DB_FILE = os.path.join(passed_args.userdata, 'watcher.sqlite')
+        if not os.path.exists(watcher3.USERDATA):
+            os.mkdir(watcher3.USERDATA)
             print("Specified userdata directory created.")
         else:
             print("Userdata directory exists, continuing.")
     if passed_args.db:
-        core.DB_FILE = passed_args.db
-        if not os.path.exists(os.path.dirname(core.DB_FILE)):
-            os.makedirs(os.path.dirname(core.DB_FILE))
+        watcher3.DB_FILE = passed_args.db
+        if not os.path.exists(os.path.dirname(watcher3.DB_FILE)):
+            os.makedirs(os.path.dirname(watcher3.DB_FILE))
     else:
-        core.DB_FILE = os.path.join(core.PROG_PATH, core.DB_FILE)
+        watcher3.DB_FILE = os.path.join(watcher3.PROG_PATH, watcher3.DB_FILE)
     if passed_args.conf:
-        core.CONF_FILE = passed_args.conf
-        if not os.path.exists(os.path.dirname(core.CONF_FILE)):
-            os.makedirs(os.path.dirname(core.CONF_FILE))
+        watcher3.CONF_FILE = passed_args.conf
+        if not os.path.exists(os.path.dirname(watcher3.CONF_FILE)):
+            os.makedirs(os.path.dirname(watcher3.CONF_FILE))
     else:
-        core.CONF_FILE = os.path.join(core.PROG_PATH, core.CONF_FILE)
+        watcher3.CONF_FILE = os.path.join(watcher3.PROG_PATH, watcher3.CONF_FILE)
     if passed_args.log:
-        core.LOG_DIR = passed_args.log
+        watcher3.LOG_DIR = passed_args.log
     if passed_args.plugins:
-        core.PLUGIN_DIR = passed_args.plugins
+        watcher3.PLUGIN_DIR = passed_args.plugins
     if passed_args.posters:
-        core.POSTER_DIR = passed_args.posters
+        watcher3.POSTER_DIR = passed_args.posters
     else:
-        core.POSTER_DIR = os.path.join(core.USERDATA, 'posters')
+        watcher3.POSTER_DIR = os.path.join(watcher3.USERDATA, 'posters')
         
     # set up db connection
-    from core import sqldb
-    core.sql = sqldb.SQL()
-    core.sql.update_database()
+    from watcher3 import sqldb
+    watcher3.sql = sqldb.SQL()
+    watcher3.sql.update_database()
 
     # set up config file on first launch
-    from core import config
-    if not os.path.isfile(core.CONF_FILE):
-        print(f'\033[33m## Config file not found. Creating new basic config {core.CONF_FILE}. Please review settings. \033[0m')
+    from watcher3 import config
+    if not os.path.isfile(watcher3.CONF_FILE):
+        print(f'\033[33m## Config file not found. Creating new basic config {watcher3.CONF_FILE}. Please review settings. \033[0m')
         config.new_config()
     else:
         print('Config file found, merging any new options.')
@@ -100,8 +100,8 @@ if __name__ == '__main__':
     config.load()
 
     # Set up logging
-    from core import log
-    log.start(core.LOG_DIR, passed_args.stdout or False)
+    from watcher3 import log
+    log.start(watcher3.LOG_DIR, passed_args.stdout or False)
     logging = logging.getLogger(__name__)
     cherrypy.log.error_log.propagate = True
     cherrypy.log.access_log.propagate = False
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     # clean mako cache
     try:
         print('Clearing Mako cache.')
-        shutil.rmtree(core.MAKO_CACHE)
+        shutil.rmtree(watcher3.MAKO_CACHE)
     except FileNotFoundError:  # noqa: F821 : Flake8 doesn't know about some built-in exceptions
         pass
     except Exception as e:
@@ -117,35 +117,35 @@ if __name__ == '__main__':
         print(e)
 
     # Finish core application
-    from core import config, scheduler, version
-    from core.app import App
-    core.updater = version.manager()
+    from watcher3 import config, scheduler, version
+    from watcher3.app import App
+    watcher3.updater = version.manager()
 
     # Set up server
     if passed_args.address:
-        core.SERVER_ADDRESS = passed_args.address
+        watcher3.SERVER_ADDRESS = passed_args.address
     else:
-        core.SERVER_ADDRESS = str(core.CONFIG['Server']['serverhost'])
+        watcher3.SERVER_ADDRESS = str(watcher3.CONFIG['Server']['serverhost'])
     if passed_args.port:
-        core.SERVER_PORT = passed_args.port
+        watcher3.SERVER_PORT = passed_args.port
     else:
-        core.SERVER_PORT = core.CONFIG['Server']['serverport']
+        watcher3.SERVER_PORT = watcher3.CONFIG['Server']['serverport']
 
     # mount and configure applications
-    if core.CONFIG['Server']['customwebroot']:
-        core.URL_BASE = core.CONFIG['Server']['customwebrootpath']
+    if watcher3.CONFIG['Server']['customwebroot']:
+        watcher3.URL_BASE = watcher3.CONFIG['Server']['customwebrootpath']
 
-    core.SERVER_URL = f'http://{core.SERVER_ADDRESS}:{core.SERVER_PORT}{core.URL_BASE}'
+    watcher3.SERVER_URL = f'http://{watcher3.SERVER_ADDRESS}:{watcher3.SERVER_PORT}{watcher3.URL_BASE}'
 
-    root = cherrypy.tree.mount(App(), f'{core.URL_BASE}/', 'core/conf_app.ini')
+    root = cherrypy.tree.mount(App(), f'{watcher3.URL_BASE}/', 'core/conf_app.ini')
 
     # Start plugins
     if passed_args.daemon:
-        if core.PLATFORM == '*nix':
+        if watcher3.PLATFORM == '*nix':
             Daemonizer(cherrypy.engine).subscribe()
-        elif core.PLATFORM == 'windows':
+        elif watcher3.PLATFORM == 'windows':
             from cherrypysytray import SysTrayPlugin  # noqa
-            menu_options = (('Open Browser', None, lambda *args: webbrowser.open(core.SERVER_URL)),)
+            menu_options = (('Open Browser', None, lambda *args: webbrowser.open(watcher3.SERVER_URL)),)
             systrayplugin = SysTrayPlugin(cherrypy.engine, 'core/favicon.ico', 'Watcher', menu_options)
             systrayplugin.subscribe()
             systrayplugin.start()
@@ -156,11 +156,11 @@ if __name__ == '__main__':
         PIDFile(cherrypy.engine, passed_args.pid).subscribe()
 
     # SSL certs
-    if core.CONFIG['Server']['ssl_cert'] and core.CONFIG['Server']['ssl_key']:
+    if watcher3.CONFIG['Server']['ssl_cert'] and watcher3.CONFIG['Server']['ssl_key']:
         logging.info('SSL Certs are enabled. Server will only be accessible via https.')
         print('SSL Certs are enabled. Server will only be accessible via https.')
-        ssl_conf = {'server.ssl_certificate': core.CONFIG['Server']['ssl_cert'],
-                    'server.ssl_private_key': core.CONFIG['Server']['ssl_key'],
+        ssl_conf = {'server.ssl_certificate': watcher3.CONFIG['Server']['ssl_cert'],
+                    'server.ssl_private_key': watcher3.CONFIG['Server']['ssl_key'],
                     'tools.https_redirect.on': True
                     }
         try:
@@ -177,16 +177,16 @@ You may avoid this by installing the pyopenssl module.'''
         cherrypy.config.update(ssl_conf)
 
     # Open browser
-    if passed_args.browser or core.CONFIG['Server']['launchbrowser']:
+    if passed_args.browser or watcher3.CONFIG['Server']['launchbrowser']:
         logging.info('Launching web browser.')
-        a = 'localhost' if core.SERVER_ADDRESS == '0.0.0.0' else core.SERVER_ADDRESS
-        webbrowser.open(f'http://{a}:{core.SERVER_PORT}{core.URL_BASE}')
+        a = 'localhost' if watcher3.SERVER_ADDRESS == '0.0.0.0' else watcher3.SERVER_ADDRESS
+        webbrowser.open(f'http://{a}:{watcher3.SERVER_PORT}{watcher3.URL_BASE}')
 
     # start engine
     cherrypy.config.update('core/conf_global.ini')
     cherrypy.engine.signals.subscribe()
     cherrypy.engine.start()
-    os.chdir(core.PROG_PATH)  # have to do this for the daemon
+    os.chdir(watcher3.PROG_PATH)  # have to do this for the daemon
     cherrypy.engine.block()
 
 # pylama:ignore=E402

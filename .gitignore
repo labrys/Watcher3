@@ -3,10 +3,10 @@ userdata/*
 !userdata/gitkeep
 logs/*
 watcher.zip
-core/version
-core/rss/imdb
+watcher3/version
+watcher3/rss/imdb
 db/*
-core/cp_plugins/tasks.json
+watcher3/cp_plugins/tasks.json
 .editorconfig
 
 # Compiled
