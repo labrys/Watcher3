@@ -2,10 +2,10 @@ from base64 import b32decode as bd
 from base64 import b16encode as be
 from random import choice as rc
 import hashlib
-from lib import requests
+import requests
 import random
 import unicodedata
-from lib import bencodepy
+import bencodepy
 from string import punctuation
 import watcher3
 import logging

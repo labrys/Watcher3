@@ -1,7 +1,7 @@
 import logging
 import re
 
-from lib.deluge_client import DelugeRPCClient
+from deluge_client import DelugeRPCClient
 from datetime import datetime
 
 import watcher3

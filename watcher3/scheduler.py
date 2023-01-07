@@ -9,7 +9,7 @@ import hashlib
 
 from watcher3 import searcher, postprocessing, downloaders, snatcher
 from watcher3.rss import imdb, popularmovies
-from lib.cherrypyscheduler import SchedulerPlugin
+from cherrypyscheduler import SchedulerPlugin
 from watcher3 import trakt
 from watcher3.library import Metadata, Manage
 
